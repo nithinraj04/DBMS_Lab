@@ -198,7 +198,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldAttrName[ATTR_
 
     Attribute relNameAttr;
     strcpy(relNameAttr.sVal, relName);
-    RecId recId = {-1, -1};
+    RecId recId;
     recId = linearSearch(RELCAT_RELID, RELCAT_ATTR_RELNAME, relNameAttr, EQ);
 
     if (recId.block == -1 && recId.slot == -1) {
@@ -224,6 +224,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldAttrName[ATTR_
 
         if (strcasecmp(attrCatEntry[ATTRCAT_ATTR_NAME_INDEX].sVal, oldAttrName) == 0) {
             attrRecId = recId;
+            break;
         }
 
         if (strcasecmp(attrCatEntry[ATTRCAT_ATTR_NAME_INDEX].sVal, newAttrName) == 0) {

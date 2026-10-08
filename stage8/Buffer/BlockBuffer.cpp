@@ -10,20 +10,8 @@ BlockBuffer::BlockBuffer(int blockNum) {
   this->blockNum = blockNum;
 }
 
-int getBlockType(char blockType) {
-  if (blockType == 'R') {
-    return REC;
-  } else if (blockType == 'I') {
-    return IND_INTERNAL;
-  } else if (blockType == 'L') {
-    return IND_LEAF;
-  } else {
-    return UNUSED_BLK;
-  }
-}
-
 BlockBuffer::BlockBuffer(char blockType) {
-  int ret = getFreeBlock(getBlockType(blockType));
+  int ret = getFreeBlock(blockType);
   this->blockNum = ret;
   // The caller must check if this allocation was successful
   // We ain't handling errors here
@@ -49,8 +37,6 @@ int BlockBuffer::getHeader(struct HeadInfo *head) {
   memcpy(&head->numAttrs, bufferPtr + 20, 4);
   memcpy(&head->rblock, bufferPtr + 12, 4);
   memcpy(&head->lblock, bufferPtr + 8, 4);
-  memcpy(&head->pblock, bufferPtr + 4, 4);
-  memcpy(&head->blockType, bufferPtr, 4);
 
   return SUCCESS;
 }
@@ -68,8 +54,6 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
   memcpy(bufferPtr + 20, &head->numAttrs, 4);
   memcpy(bufferPtr + 12, &head->rblock, 4);
   memcpy(bufferPtr + 8, &head->lblock, 4);
-  memcpy(bufferPtr + 4, &head->pblock, 4);
-  memcpy(bufferPtr, &head->blockType, 4);
 
   ret = StaticBuffer::setDirtyBit(this->blockNum);  // mark the block as dirty
   if (ret != SUCCESS) {
